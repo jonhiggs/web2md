@@ -2,8 +2,9 @@ SHELL = /bin/bash
 include ./secrets.mk
 MERCURY_API_KEY ?= XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-info:
-	echo ${MERCURY_API_KEY}
+ifndef URL
+  $(error URL is undefined)
+endif
 
 .PRECIOUS: tmp/data.json
 tmp/data.json:
