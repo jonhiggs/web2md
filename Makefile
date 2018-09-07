@@ -24,42 +24,11 @@ tmp/data.html: tmp/data.json
 	@echo "<h1>${TITLE}</h1>" >> $@
 	@echo '${CONTENT}' >> $@
 
-.DELETE_ON_ERROR: tmp/data_local_assets.html
-tmp/data_local_assets.html: fetch_assets
-tmp/data_local_assets.html: tmp/data.html tmp/asset_list_shas.txt
-	cp $< $@
-	while read l; do \
-		regex=$$(echo $$l | awk '{ print $$2 }'| tr '\/$$?\-.[]{}' '.');  \
-		replacement="assets\/$$(echo $$l | awk '{ print $$1 }')";               \
-		echo "escaped thing $$regex"; \
-		sed -i .bak "s/$$regex/$$replacement/g" $@; \
-	done < tmp/asset_list_shas.txt
-
-tmp/data.md: tmp/data_local_assets.html
+tmp/data.md: tmp/data.html assets
 	pandoc --wrap=none -w markdown_strict $< -o $@
 
-tmp/asset_list.txt: tmp/data.json
-	jq .content < $< | grep -o "img\ src=[^>]*" | grep -o http[^\ \\]* > $@
-
-.DELETE_ON_ERROR: tmp/asset_list_shas.txt
-tmp/asset_list_shas.txt: tmp/asset_list.txt
-	while read l; do                    \
-		ext=$$(basename "$$l" | sed 's/\?.*//' | rev | cut -d. -f1 | rev | tr '[:upper:]' '[:lower:]'); \
-		echo $$l | md5 | tr -d "\n" >> $@;      \
-		echo -n ".$$ext " >> $@;                \
-		echo " $$l" >> $@;                      \
-	done < $<
-	[[ $$(tail -n 1 "$@" | wc -w) -eq 2 ]]
-
-.PHONY: fetch_assets
-fetch_assets: tmp/asset_list_shas.txt
-	mkdir -p tmp/assets
-	while read l; do                                       \
-		o="tmp/assets/$$(echo $$l | awk '{ print $$1 }')"; \
-		i=$$(echo $$l | awk '{ print $$2 }');              \
-		[[ -f $$o ]] && continue;                          \
-		wget "$$i" -O "$$o";                               \
-	done < $<
+assets: tmp/data.json tmp/data.html
+	$(MAKE) -f asset.mk all
 
 clean:
 	rm -Rf tmp/*

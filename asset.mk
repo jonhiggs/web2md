@@ -9,7 +9,14 @@ fetch-%: SHA = $(shell echo ${URL} | md5)
 fetch-%: EXT = $(shell basename "${URL}" | sed 's/\?.*//' | rev | cut -d. -f1 | rev | tr '[:upper:]' '[:lower:]')
 fetch-%:
 	$(MAKE) -f asset.mk tmp/assets/${SHA}.${EXT} URL=${URL}
+	$(MAKE) -f asset.mk tmp/data.html FILE=assets/${SHA}.${EXT} URL=${URL}
 
 tmp/assets/%:
 	mkdir -p tmp/assets
 	wget "${URL}" -O $@
+
+tmp/data.html: pattern = $(shell echo ${URL} | tr '\/$$?\-.[]{}' '.')
+tmp/data.html: FORCE
+	sed -i .bak "s#${pattern}#${FILE}#g" $@
+
+FORCE:
