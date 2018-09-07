@@ -7,7 +7,10 @@ ifndef URL
 endif
 
 .PRECIOUS: tmp/data.json
-tmp/data.json:
+tmp:
+	mkdir -p $@
+
+tmp/data.json: tmp
 	curl                                                    \
 		-H "x-api-key: ${MERCURY_API_KEY}"                  \
 		"https://mercury.postlight.com/parser?url=${URL}"   \
