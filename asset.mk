@@ -1,5 +1,7 @@
 SHELL = /bin/bash
-assets-url = $(shell jq .content < tmp/data.json | grep -o "img\ src=[^>]*" | grep -o http[^\ \\]*)
+assets-url = $(shell jq .content tmp/data.json | grep -o "img\ src=[^>]*" | grep -o http[^\ \\]*)
+assets-url += $(shell jq -r .lead_image_url tmp/data.json)
+
 assets-enc = $(shell for i in ${assets-url}; do echo $$i | base64; done)
 
 all: %: $(addprefix fetch-,${assets-enc})

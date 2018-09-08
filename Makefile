@@ -19,9 +19,11 @@ tmp/data.json: tmp
 tmp/data.html: TITLE = $(shell cat tmp/data.json | jq -r .title)
 tmp/data.html: SOURCE = $(shell cat tmp/data.json | jq -r .url)
 tmp/data.html: CONTENT = $(shell cat tmp/data.json | jq -r .content)
+tmp/data.html: LEAD_IMAGE = $(shell cat tmp/data.json | jq -r .lead_image_url)
 tmp/data.html: tmp/data.json
 	@echo "<a href='${SOURCE}'>Source</a>" > $@
 	@echo "<h1>${TITLE}</h1>" >> $@
+	@[[ -z ${LEAD_IMAGE} ]] || echo "<img src='${LEAD_IMAGE}' />" >> $@
 	@echo '${CONTENT}' >> $@
 
 tmp/data.md: tmp/data.html assets
