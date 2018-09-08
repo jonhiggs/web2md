@@ -23,7 +23,7 @@ tmp/data.html: LEAD_IMAGE = $(shell cat tmp/data.json | jq -r .lead_image_url)
 tmp/data.html: tmp/data.json
 	@echo "<a href='${SOURCE}'>Source</a>" > $@
 	@echo "<h1>${TITLE}</h1>" >> $@
-	@[[ -z ${LEAD_IMAGE} ]] || echo "<img src='${LEAD_IMAGE}' />" >> $@
+	-@[[ ${LEAD_IMAGE} != 'null' ]] && echo "<img src='${LEAD_IMAGE}' />" >> $@
 	@echo '${CONTENT}' >> $@
 
 tmp/data.md: tmp/data.html assets
@@ -31,6 +31,18 @@ tmp/data.md: tmp/data.html assets
 
 assets: tmp/data.json tmp/data.html
 	$(MAKE) -f asset.mk all
+
+save: TITLE = $(shell jq -r .title tmp/data.json)
+save: DATE = $(shell gdate +%Y%m%d)
+save: SLUG = $(shell echo "${TITLE}" | tr '[:upper:]' '[:lower:]' | tr '-' ' ' | tr -d '[:punct:]' | tr '[:blank:]' '-')
+save: OUTPUT_DIR = ${HOME}/Dropbox/articles
+save: tmp/data.md assets
+	mkdir -p ${OUTPUT_DIR}/assets/
+	cp $< ${OUTPUT_DIR}/${DATE}-${SLUG}.md
+	cp -r tmp/assets/ ${OUTPUT_DIR}/assets/
+
+preview: tmp/data.md assets
+	marked $<
 
 clean:
 	rm -Rf tmp/*
