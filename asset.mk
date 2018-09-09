@@ -1,24 +1,20 @@
 SHELL = /bin/bash
-assets-url = $(shell jq .content tmp/data.json | grep -o "img\ src=[^>]*" | grep -o http[^\ \\]*)
-assets-url += $(shell jq -r .lead_image_url tmp/data.json)
 
-assets-enc = $(shell for i in ${assets-url}; do echo $$i | base64; done)
+ifndef ASSET_URL
+  $(error ASSET_URL is undefined)
+endif
 
-all: %: $(addprefix fetch-,${assets-enc})
+sha = $(shell echo ${ASSET_URL} | md5)
+ext = $(shell basename "${ASSET_URL}" | sed 's/\?.*//' | rev | cut -d. -f1 | rev | tr '[:upper:]' '[:lower:]')
+file = tmp/assets/${sha}.${ext}
 
-fetch-%: URL = $(shell echo $* | base64 -D)
-fetch-%: SHA = $(shell echo ${URL} | md5)
-fetch-%: EXT = $(shell basename "${URL}" | sed 's/\?.*//' | rev | cut -d. -f1 | rev | tr '[:upper:]' '[:lower:]')
-fetch-%:
-	$(MAKE) -f asset.mk tmp/assets/${SHA}.${EXT} URL=${URL}
-	$(MAKE) -f asset.mk tmp/data.html FILE=assets/${SHA}.${EXT} URL=${URL}
+.PHONY: fetch
+fetch: ${file}
 
-tmp/assets/%:
-	mkdir -p tmp/assets
-	wget "${URL}" -O $@
+.PHONY: sha ext file
+sha ext file:
+	@echo $($@)
 
-tmp/data.html: pattern = $(shell echo ${URL} | tr '\/$$?\-.[]{}' '.')
-tmp/data.html: FORCE
-	sed -i .bak "s#${pattern}#${FILE}#g" $@
-
-FORCE:
+${file}:
+	mkdir -p $(dir $@)
+	wget "${ASSET_URL}" -O $@
