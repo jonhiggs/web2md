@@ -23,14 +23,8 @@ tmp/data.md: tmp/data.html assets
 assets: tmp/data.json tmp/data.html
 	$(MAKE) -f asset.mk all
 
-.PHONY: save
-save: TITLE = $(shell jq -r .title tmp/data.json)
-save: DATE = $(shell gdate +%Y%m%d)
-save: SLUG = $(shell echo "${TITLE}" | tr '[:upper:]' '[:lower:]' | tr '-' ' ' | tr -d '[:punct:]' | tr '[:blank:]' '-')
-save: OUTPUT_DIR = ${HOME}/Dropbox/articles
-save: tmp/data.md assets
-	cp $< ${OUTPUT_DIR}/${DATE}-${SLUG}.md
-	cp -r tmp/assets/ ${OUTPUT_DIR}/assets/
+save: tmp/data.md
+	$(MAKE) -f save.mk all
 
 preview: tmp/data.md assets
 	marked $<

@@ -18,3 +18,4 @@ sha ext file:
 ${file}:
 	mkdir -p $(dir $@)
 	wget "${ASSET_URL}" -O $@
+	$(MAKE) -f ./html.mk fixup_link ASSET_URL="${ASSET_URL}" FILE="$@"
