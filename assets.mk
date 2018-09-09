@@ -4,7 +4,7 @@ export asset-urls += $(filter-out null,$(shell jq -r .lead_image_url tmp/data.js
 
 
 .PHONY: fetch_all
-fetch_all:
+all:
 	for u in ${asset-urls}; do make -f ./asset.mk fetch ASSET_URL="$$u"; done
 
 .PHONY: asset_urls

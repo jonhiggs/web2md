@@ -21,7 +21,7 @@ tmp/data.md: tmp/data.html assets
 	pandoc --wrap=none -w markdown_strict $< -o $@
 
 assets: tmp/data.json tmp/data.html
-	$(MAKE) -f asset.mk all
+	$(MAKE) -f assets.mk all
 
 save: tmp/data.md
 	$(MAKE) -f save.mk all

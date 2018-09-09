@@ -17,4 +17,4 @@ tmp/data.html:
 .PHONY: fixup_link
 fixup_link: pattern = $(shell echo ${ASSET_URL} | tr '\/$$?\-.[]{}' '.')
 fixup_link: tmp/data.html
-	sed -i .bak "s#${pattern}#${FILE}#g" $<
+	sed -i .bak "s#${pattern}#assets/$(notdir ${FILE})#g" $<
