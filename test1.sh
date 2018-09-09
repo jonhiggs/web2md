@@ -21,7 +21,7 @@ testDataHtml() {
   assertEquals "source" "${source}" "$(grep Source tmp/data.html)"
   assertEquals "lead_image" "${lead_image}" "$(grep 'img src..https://www.energyseek.co.uk/wp-content/uploads/2014/06/xylemwaterfilter.jpg' ./tmp/data.html)"
   assertTrue   "fixup link" "$(make -f html.mk fixup_link ASSET_URL="${asset_url}" FILE="xxxx.jpg")"
-  assertEquals "link is fixed" "<img src='xxxx.jpg' />" "$(grep img.src tmp/data.html)"
+  assertEquals "link is fixed" "<img src='assets/xxxx.jpg' />" "$(grep img.src tmp/data.html)"
 }
 
 testAssets() {
