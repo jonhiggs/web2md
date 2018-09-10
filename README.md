@@ -1,4 +1,4 @@
-# Mercury Markdown
+# web2md
 
 Use [Mercury][mercury] and [Pandoc][pandoc] to:
 
@@ -10,7 +10,8 @@ Use [Mercury][mercury] and [Pandoc][pandoc] to:
 
 ## Usage
 
-`make markdown URL=http://wherever.com"`
+To show a preview: `make preview URL=http://wherever.com"`  
+To save a page: `make save URL=http://wherever.com"`
 
 
 
